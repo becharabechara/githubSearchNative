@@ -9,7 +9,7 @@ export default class UserProfile extends React.Component {
                 leftAvatar={{
                     title: name[0],
                     source: { uri: photo },
-                    showEditButton: true,
+                    showEditButton: false,
                 }}
                 title={name}
             />

@@ -1,13 +1,10 @@
 import React from 'react';
-import {
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
-} from 'react-native';
-import {setLocalStorageRepos} from '../components/Locals/localStorage';
-import CustomSearchBar from '../components/SearchPage/CustomSearchBar';
+import {ScrollView,StyleSheet,Text,View} from 'react-native';
+import { setLocalStorageRepos } from '../components/Locals/localStorage';
+import CustomSearchBar from '../components/SeachPage/CustomSearchBar';
+import UserProfile from '../components/SeachPage/UserProfile';
+import UserReposList from '../components/SeachPage/UserReposList';
+import axios from 'axios';
 
 const TOKEN = require('./token.json').TOKEN;
 
@@ -21,7 +18,7 @@ const styles = StyleSheet.create({
     },
     getStartedContainer: {
         alignItems: 'center',
-        marginHorizontal: 50,
+        margin: 'auto',
     },
     getStartedText: {
         fontSize: 30,
@@ -41,7 +38,7 @@ export default class SearchScreen extends React.Component {
                 photo: ""
             },
             repositories: [],
-            search :""
+            search: ""
         }
     }
     static navigationOptions = {
@@ -50,7 +47,7 @@ export default class SearchScreen extends React.Component {
 
     getUserRepos = async username => {
         try {
-            if(username !== "" || username !== undefined || username !== null){
+            if (username !== "" || username !== undefined || username !== null) {
                 const response = await axios.get(`https://api.github.com/users/${username}?access_token=${TOKEN}`);
                 const result = response.data;
                 if (result.login !== undefined) {
@@ -73,7 +70,7 @@ export default class SearchScreen extends React.Component {
                             };
                         })
                     });
-                   setLocalStorageRepos(this.state.repositories);
+                    await setLocalStorageRepos(this.state.repositories);
                 }
             }
         }
@@ -90,17 +87,19 @@ export default class SearchScreen extends React.Component {
                         <Text style={styles.getStartedText}>Github SearchPage</Text>
                     </View>
                     <View style={styles.container}>
-                        <CustomSearchBar handleSubmit={this.getUserRepos} {...this.props}/>
-                        <View style={styles.container}>
-                            {
-                                this.state.loggedUser.name === "" ?
-                                    null
-                                    : <View style={styles.container}>
-                                        <UserProfile loggedUser={this.state.loggedUser} {...this.props}/>
-                                        {/*<UserReposList repositories={this.state.repositories} sendRepositoryDetails={this.props.sendRepositoryDetails} {...this.props} />*/}
-                                    </View>
-                            }
-                        </View>
+                        <CustomSearchBar handleSubmit={this.getUserRepos} {...this.props} />
+                        {
+                            this.state.loggedUser.name === "" ?
+                                null
+                                : <View>
+                                    <UserProfile loggedUser={this.state.loggedUser} {...this.props} />
+                                    {
+                                        this.state.repositories !== undefined ?
+                                        <UserReposList repositories={this.state.repositories} {...this.props} />
+                                        :null
+                                    }
+                                </View>
+                        }
                     </View>
                 </ScrollView>
             </View>
